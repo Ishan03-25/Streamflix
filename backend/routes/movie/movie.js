@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get("/all", async function (req, res) {
   try {
-    const movies = await movie.find({});
+    const movies = await movie.find({}).limit(150);
     res.json(movies);
   } catch (error) {
     console.log("Error in fetching all movies in /all endpoint: ", error);
@@ -25,7 +25,7 @@ async function autoCompleteAndFuzzySearch(search) {
         },
       },
       { $limit: 20 },
-      { $project: { _id: 0, title: 1 } },
+      { $project: { _id: 1, title: 1 } },
     ]);
     return result;
   } catch (error) {
@@ -73,5 +73,20 @@ router.get("/search", async function (req, res) {
     }
   }
 });
+
+router.get("/search/:id", async function(req, res) {
+    const {id} = req.params;
+    const IdString = id.toString();
+    const movieIdLength = IdString.length;
+    const movieId = IdString.slice(1, movieIdLength);
+    console.log("Received ID: "+movieId);
+    try {
+        const result = await movie.findById(movieId).exec();
+        console.log(result);
+        res.status(200).json(result);
+    } catch (error) {
+        console.log("Error in get request by id: ", error);
+    }
+})
 
 module.exports = router;

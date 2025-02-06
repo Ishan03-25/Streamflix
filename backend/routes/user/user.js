@@ -98,8 +98,7 @@ router.post("/signin", async (req, res) => {
   }
 });
 
-// Get User Info (Protected Route)
-router.get("/me", async (req, res) => {
+router.get("/verify-token", async (req, res) => {
   const token = req.headers.token;
 
   if (!token) {
@@ -130,6 +129,40 @@ router.get("/me", async (req, res) => {
       message: "Invalid or expired token",
     });
   }
-});
+})
+
+// Get User Info (Protected Route)
+// router.get("/me", async (req, res) => {
+//   const token = req.headers.token;
+
+//   if (!token) {
+//     return res.status(401).json({
+//       message: "Token not provided",
+//     });
+//   }
+
+//   try {
+//     // Verify the token
+//     const decodedData = jwt.verify(token, JWT_SECRET);
+
+//     // Find the user in the database
+//     const foundUser = await User.findOne({ username: decodedData.username });
+//     if (!foundUser) {
+//       return res.status(404).json({
+//         message: "User not found",
+//       });
+//     }
+
+//     // Respond with user details (excluding the password)
+//     res.json({
+//       username: foundUser.username,
+//       email: foundUser.email
+//     });
+//   } catch (error) {
+//     res.status(401).json({
+//       message: "Invalid or expired token",
+//     });
+//   }
+// });
 
 module.exports = router;

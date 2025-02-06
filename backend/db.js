@@ -2,7 +2,10 @@ const mongoose = require("mongoose");
 
 async function connectDB() {
     try {
-        await mongoose.connect("mongodb+srv://ishan03sharma25:Ishan123@cluster0.rvo7d.mongodb.net/moviewebsitedatabase");
+        await mongoose.connect("mongodb+srv://ishan03sharma25:Ishan123@cluster0.rvo7d.mongodb.net/sample_mflix", {
+            serverSelectionTimeoutMS: 50000,
+            socketTimeoutMS: 45000,
+        });
         console.log("Successfully connected to database");
     } catch (error) {
         console.log("Error in conneccting to database: ", error);
@@ -28,6 +31,7 @@ const movieSchema = new mongoose.Schema({
   ImageURL: { type: String, required: true },
   genre: { type: String, required: true },
   duration: { type: Number, required: true },
+  plot_embedding: {type: [Number]},
 });
 
 const User = mongoose.model("users", userSchema);

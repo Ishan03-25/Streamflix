@@ -13,30 +13,27 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      //   const res = await axios.post("http://localhost:3000/users/signup", {
-      //     data: {
-      //         username: name,
-      //         email: email,
-      //         password: password
-      //     },
-      //     headers: {
-      //         "Content-Type": "application/json",
-      //     }
-      //   });
-      console.log("Axios request");
-      const res = await axios.post("http://localhost:3000/users/signup", {username: name, email: email, password: password}, {headers: {"Content-Type": "application/json"}});
-      console.log(res);
+      const res = await axios.post(
+        "http://localhost:3000/users/signup",
+        { username: name, email: email, password: password },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
       if (res.status === 200) {
         navigate("/signin");
-      } else if (res.status === 500) {
-        setError(res.data);
-      } else if (res.status === 400) {
-        setError(res.data);
-      } else if (res.status === 411) {
-        setError(res.data);
       }
     } catch (err) {
-      setError("Registration failed. Please try again: " + err);
+      if (err.response) {
+        const { status, data } = err.response;
+        if (status === 400 && data === "User already exists") {
+          setError("User already exists. Redirecting to sign-in...");
+          setTimeout(() => navigate("/signin"), 2000); // Redirect after 2 sec
+        } else {
+          setError(data || "Registration failed. Please try again.");
+        }
+      } else {
+        setError("Registration failed. Please try again.");
+      }
     }
   };
 
@@ -111,8 +108,15 @@ const Register = () => {
               Register
             </button>
           </div>
+          <div>
+            <button
+              onClick={()=>navigate("/signin")}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              If account already exists   
+              </button>       
+          </div>
         </form>
-        {error && <p className="text-red-500">{error}</p>}
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
+import MovieDetails from "./pages/MovieDetails";
 // import Navbar from "./components/Navbar";
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
           <Route path="/signin" element={<Login />} />
           <Route path="/home" element={<Home />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/MovieDetails/:id" element={<MovieDetails />} />
         </Routes>
     </BrowserRouter>
   );

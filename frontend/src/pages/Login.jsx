@@ -4,6 +4,8 @@ import { LogIn } from "lucide-react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
+let l=0;
+
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -24,13 +26,17 @@ const Login = () => {
       //     },
       //   });
       console.log("Axios Request start");
-      const res = await axios.post("http://localhost:3000/users/signin",
+      // let l = 0;
+      const res = await axios.post(
+        "http://localhost:3000/users/signin",
         { email: email, password: password },
-        { headers: { "Content-Type": "application/json" } },
+        { headers: { "Content-Type": "application/json" } }
       );
       console.log("Error in axios request: ", res.error);
       if (res.status === 200) {
+        l = 1;
         localStorage.setItem("token", res.data.token);
+        localStorage.setItem("l", 1);
         navigate("/home");
       } else if (res.status === 500) {
         setError(res.data);
@@ -112,3 +118,4 @@ const Login = () => {
 };
 
 export default Login;
+export {l};

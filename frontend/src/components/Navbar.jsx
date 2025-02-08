@@ -1,28 +1,40 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Film, Search, Menu, LogOut } from "lucide-react";
+import { Film, Search, Menu, LogOut, ChevronDown } from "lucide-react";
 import axios from "axios";
 
 const Navbar = () => {
   const [query, setQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isTitleSearch, setIsTitleSearch] = useState(true);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   //   const [isSuggestions, setIsSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (query===""){
-        setSuggestions([]);
-        return;
+    if (query === "") {
+      setSuggestions([]);
+      return;
     }
     const fetchSuggestions = async () => {
       try {
-        const res = await axios.get(
-          "http://localhost:3000/movies/search?filter=" + query
-        );
-        console.log(res.data);
-        // setIsSuggestions(true);
-        setSuggestions(res.data.autoCompleteAndFuzzyResult);
+        if (isTitleSearch) {
+          const res = await axios.get(
+            "http://localhost:3000/movies/search/autocomplete?filter=" + query
+          );
+          console.log(res.data);
+          // setIsSuggestions(true);
+          setSuggestions(res.data.autoCompleteAndFuzzyResult);
+        } else {
+          const res = await axios.get(
+            "http://localhost:3000/movies/search/semantic?filter=" + query
+          );
+          console.log(res.data);
+          // setIsSuggestions(true);
+          setSuggestions(res.data);
+        }
+
         console.log("Suggestions: ", suggestions);
       } catch (error) {
         console.log("Error in fetching suggestions: ", error);
@@ -32,14 +44,19 @@ const Navbar = () => {
     return () => clearTimeout(debounceTimer);
   }, [query]);
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log("Updated suggestions: ", suggestions);
   }, [suggestions]);
 
   const handleLogout = async () => {
     localStorage.removeItem("token");
     navigate("/");
-  }
+  };
+
+  const handleSearchTypeChange = (val) => {
+    setIsTitleSearch(val);
+    setIsDropdownOpen(false);
+  };
 
   return (
     <nav className="bg-black/95 text-white sticky top-0 z-50 backdrop-blur-sm">
@@ -55,15 +72,6 @@ const Navbar = () => {
             <div className="hidden md:flex ml-8 space-x-6">
               <Link to="/home" className="hover:text-blue-400">
                 Home
-              </Link>
-              <Link to="/movies" className="hover:text-blue-400">
-                Movies
-              </Link>
-              <Link to="/tv-shows" className="hover:text-blue-400">
-                TV Shows
-              </Link>
-              <Link to="/watchlist" className="hover:text-blue-400">
-                Watchlist
               </Link>
             </div>
           </div>
@@ -100,7 +108,32 @@ const Navbar = () => {
         )} */}
         {isSearchOpen && (
           <div className="relative w-full max-w-2xl">
-            <div className="relative">
+            <div className="relative flex items-centre">
+              <div className="relative">
+                <button
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="flex items-center px-4 py-2 text-sm font-medium text-white bg-white/10 rounded-l-lg hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {isTitleSearch ? "Title" : "Plot"}
+                  <ChevronDown className="ml-2 h-4 w-4" />
+                </button>
+                {isDropdownOpen && (
+                  <div className="absolute mt-2 w-32 bg-black rounded-lg shadow-lg z-20">
+                    <button
+                      onClick={() => handleSearchTypeChange(true)}
+                      className="block w-full px-4 py-2 text-sm text-white hover:bg-white/10"
+                    >
+                      Title
+                    </button>
+                    <button
+                      onClick={() => handleSearchTypeChange(false)}
+                      className="block w-full px-4 py-2 text-sm text-white hover:bg-white/10"
+                    >
+                      Plot
+                    </button>
+                  </div>
+                )}
+              </div>
               <input
                 type="text"
                 value={query}
@@ -111,7 +144,7 @@ const Navbar = () => {
                 placeholder="Search movies..."
                 className="w-full px-4 py-2 pl-10 pr-4 text-gray-900 bg-white border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+              <Search className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
             </div>
 
             {suggestions.length > 0 && (
@@ -127,7 +160,9 @@ const Navbar = () => {
                       setSuggestions([]);
                     }}
                   >
-                    <Link to={'/MovieDetails/'+movie._id} key={movie._id}>{movie.title}</Link>
+                    <Link to={"/MovieDetails/" + movie._id} key={movie._id}>
+                      {movie.title}
+                    </Link>
                   </div>
                 ))}
               </div>

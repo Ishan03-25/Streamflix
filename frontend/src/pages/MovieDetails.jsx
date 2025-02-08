@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../components/Navbar";
+import { X } from "lucide-react";
+import VideoPlayer from "../components/VideoPlayer";
 
 const MovieDetails = () => {
   const { id } = useParams();
   const [movie, setMovie] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   console.log("Movie ID: ", id);
 
@@ -47,11 +50,8 @@ const MovieDetails = () => {
               <p className="text-gray-400 mb-4">{movie.year}</p>
               <p className="text-lg mb-4">{movie.fullplot}</p>
               <div className="flex gap-4">
-                <button className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                <button onClick={()=>setIsPlaying(true)} className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
                   Play
-                </button>
-                <button className="px-6 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800">
-                  Add to Watchlist
                 </button>
               </div>
             </div>
@@ -79,6 +79,23 @@ const MovieDetails = () => {
               </div>
             </div>
           </div>
+
+          {isPlaying && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 z-50">
+            <div className="relative w-full max-w-4xl">
+              {/* Close Button */}
+              <button
+                onClick={() => setIsPlaying(false)}
+                className="absolute top-4 right-4 bg-gray-900 text-white rounded-full p-2 z-50"
+              >
+                <X className="h-6 w-6" />
+              </button>
+
+              {/* Video Player */}
+              <VideoPlayer videoUrl="https://www.w3schools.com/html/mov_bbb.mp4" />
+            </div>
+          </div>
+        )}
         </div>
       </div>
     </div>

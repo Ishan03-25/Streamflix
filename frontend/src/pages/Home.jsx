@@ -300,6 +300,10 @@ const Home = () => {
     }
   }, [movies]);
 
+  useEffect(()=>{
+    console.log("Movies: ", movies);
+  }, [movies])
+
   return (
     <div className="min-h-screen bg-gray-100">
       <Navbar />

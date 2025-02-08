@@ -6,7 +6,7 @@ const { User } = require("../../db");
 const { signupSchema, signinSchema } = require("../../types");
 
 const router = express.Router();
-const JWT_SECRET = "aadhar123"; // Use environment variables in production
+const JWT_SECRET = process.env.AUTH_JWT_SECRET // Use environment variables in production
 
 router.post("/signup", async (req, res) => {
   const { username, email, password } = req.body;

@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
 
+
 async function connectDB() {
     try {
-        await mongoose.connect("mongodb+srv://ishan03sharma25:Ishan123@cluster0.rvo7d.mongodb.net/sample_mflix", {
+        await mongoose.connect(process.env.MONGODB_CONNECTION, {
             serverSelectionTimeoutMS: 50000,
             socketTimeoutMS: 45000,
         });
@@ -35,6 +36,6 @@ const movieSchema = new mongoose.Schema({
 });
 
 const User = mongoose.model("users", userSchema);
-const movie = mongoose.model("movies", movieSchema);
+const movie = mongoose.model("embedded_movies", movieSchema);
 
 module.exports = { connectDB, movie, User };
